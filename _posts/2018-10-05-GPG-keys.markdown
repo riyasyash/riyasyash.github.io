@@ -1,0 +1,76 @@
+---
+layout: post
+title: "Verifying your github commits using GPG key!"
+description: "Today I got an email from a colleague. In the mail he had given the links to two blogs:"
+date: 2018-10-04 00:00:00
+comments: true
+image: https://cdn-images-1.medium.com/max/1600/1*NfrC9urk9a69PqAioUrvaw.jpeg
+keywords: "Git,Gpg,Keys,Tech"
+category: tech
+tags:
+- tech
+---
+Today I got an email from a colleague. In the mail he had given the links to two blogs:
+
+1. https://nvisium.com/blog/2017/06/21/securing-github-commits-with-gpg-signing/
+2. http://micropipes.com/blog//2016/08/31/signing-your-commits-on-github-with-a-gpg-key/
+
+I read through those and came to know that verifying your git commits using GPG keys are very important (Please go ahead and prove me wrong 😉 ).
+
+So, I read through Github documentation on GPG keys and tried to set it up on my mac.
+
+There were some issues — and I fixed them.
+
+## Let’s set it up — Follow me
+* For some random reason, my `gpg` command was not working and finally when I fixed the prompt was in some different language (I guess it was Spanish😋). So I didn’t use it to create the keys. I downloaded the GPG suite 2017.1 from here https://gpgtools.org/ .
+* It is a great tool, you can set up the gpg keys through the nice and easy UI.
+* The next step is to get the generated key, for this step, I used the command line tool (I don’t care which language it is, I just want my key😎) Open your terminal and enter
+
+`$gpg --list-secret-keys --keyid-format LONG`
+
+This will list all the keys in your system.
+
+* Copy the GPG key id
+
+```
+$gpg --list-secret-keys --keyid-format LONG
+/Users/hubot/.gnupg/secring.gpg
+------------------------------------
+sec 4096R/3AA5C34371567BD2 2016-03-10 [expires: 2017-03-10]
+uid Hubot 
+ssb 4096R/42B317FD4BA89E7A 2016-03-10
+```
+In the example 3AA5C34371567BD2 is the id
+
+`$gpg --armor --export 3AA5C34371567BD2`
+
+* Then let’s copy the key, beginning with — — -BEGIN PGP PUBLIC KEY BLOCK — — — and ending with — — -END PGP PUBLIC KEY BLOCK — — -
+* Now let’s head over to github.com/settings/keys
+* click on the New GPG Key button, paste the entire key you copied and confirm.
+You have successfully setup GPG key on your GitHub profile!!
+
+## Signing your git commits with GPG key
+
+* Let’s configure GPG signing in the git client, for that go to one of your local git repositories,
+
+```
+$git config gpg.program gpg
+$git config commit.gpgsign true
+$git config user.signingkey 3AA5C34371567BD2
+```
+
+Now whenever you are commiting something to git you can use the option to sign with -S flag
+
+```
+$git commit -S -m "your commit message"
+$git push
+```
+
+Now you can see a very cool verified button in your commit line
+That is it, optionally you can set all the above variables as global so that you don’t have to do this for every repo
+Please refer to following links for more details, they helped me a lot.
+
+* https://help.github.com/articles/generating-a-new-gpg-key/
+* https://help.github.com/articles/adding-a-new-gpg-key-to-your-github-account/
+* https://help.github.com/articles/signing-commits-using-gpg/
+* https://stackoverflow.com/questions/39494631/gpg-failed-to-sign-the-data-fatal-failed-to-write-commit-object-git-2-10-0
